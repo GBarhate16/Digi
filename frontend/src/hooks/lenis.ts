@@ -1,6 +1,6 @@
 // src/hooks/useLenis.ts
 import { useEffect } from "react";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 
 export const useLenis = () => {
   useEffect(() => {

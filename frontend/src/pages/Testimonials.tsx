@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import { TestimonialsColumn } from "../Components/ui/testimonials-columns-1";
 import { useLenis } from "../hooks/lenis";
 
