@@ -158,44 +158,53 @@ export const WhatWeProvide = ({ screenType }: Props) => {
   return (
     <div className="w-full flex justify-center py-10 px-4">
       <div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
-             gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 max-w-6xl"
+        className={`${
+          isMobile
+            ? "flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory"
+            : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16"
+        } max-w-6xl`}
       >
         {serviceData.map((service, index) => {
           const Icon = service.icon;
           return (
-            <GlowCard
+            <div
               key={index}
-              className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
-                isMobile ? "" : "hover:scale-105"
+              className={`${
+                isMobile ? "min-w-[80%] snap-center shrink-0" : ""
               }`}
             >
-              {/* Top: Centered Icon */}
-              <div className="flex justify-center mb-4">
-                <div
-                  className={`w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 ${
-                    isMobile ? "" : "animate-soft-glow"
-                  }`}
-                >
-                  <Icon className="text-yellow-300 w-6 h-6" />
+              <GlowCard
+                className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
+                  isMobile ? "" : "hover:scale-105"
+                }`}
+              >
+                {/* Top Icon */}
+                <div className="flex justify-center mb-4">
+                  <div
+                    className={`w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 ${
+                      isMobile ? "" : "animate-soft-glow"
+                    }`}
+                  >
+                    <Icon className="text-yellow-300 w-6 h-6" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Middle: Title & Description */}
-              <div className="flex flex-col items-center text-center mb-4 flex-grow">
-                <h3 className="text-lg font-bold text-white mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-gray-300">{service.description}</p>
-              </div>
+                {/* Title & Desc */}
+                <div className="flex flex-col items-center text-center mb-4 flex-grow">
+                  <h3 className="text-lg font-bold text-white mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-gray-300">{service.description}</p>
+                </div>
 
-              {/* Bottom: Bullet Points */}
-              <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-2">
-                {service.points.map((point, i) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ul>
-            </GlowCard>
+                {/* Bullet Points */}
+                <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-2">
+                  {service.points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
+              </GlowCard>
+            </div>
           );
         })}
       </div>

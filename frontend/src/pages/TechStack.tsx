@@ -52,26 +52,24 @@ const TechStack = () => {
       className="w-full px-4 py-12 bg-black scroll-mt-24 pt-0"
     >
       <div className="flex flex-col items-center space-y-4 max-w-3xl mx-auto">
-        {/* Icon with glow */}
         <div className="relative w-14 h-14 flex items-center justify-center bg-[#1f2230] rounded-full shadow-lg">
           <div className="absolute w-full h-full rounded-full bg-purple-500 opacity-30 blur-md animate-ping" />
           <Code2 className="w-7 h-7 text-purple-300 z-10" />
         </div>
 
-        {/* Gradient Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
           <span className="text-white">Technology </span>
           <span className="bg-gradient-to-r from-purple-400 to-yellow-500 bg-clip-text text-transparent">
             Stack
           </span>
         </h1>
+
         <p className="text-lg sm:text-xl text-gray-300 px-4 mt-2 leading-relaxed text-center">
           Engineering excellence with a stack designed for flexibility,
           performance, and growth.
         </p>
       </div>
 
-      {/* Grid Section */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-16">
         {techStack.map((tech, index) => (
           <SpotlightCard

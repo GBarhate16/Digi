@@ -8,8 +8,6 @@ interface GlowCardProps {
   width?: string | number;
   height?: string | number;
   customSize?: boolean;
-  spotlightColor?: string;
-  style?: React.CSSProperties;
 }
 
 const glowColorMap = {
@@ -29,7 +27,6 @@ const sizeMap = {
 };
 
 const GlowCard: React.FC<GlowCardProps> = ({
-
   children,
   className = "",
   glowColor = "blue",
@@ -42,12 +39,10 @@ const GlowCard: React.FC<GlowCardProps> = ({
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Detect mobile devices using window width or touch capability
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
     };
     checkMobile();
-
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -57,12 +52,17 @@ const GlowCard: React.FC<GlowCardProps> = ({
 
     const syncPointer = (e: PointerEvent) => {
       const { clientX: x, clientY: y } = e;
-
       if (cardRef.current) {
         cardRef.current.style.setProperty("--x", x.toFixed(2));
-        cardRef.current.style.setProperty("--xp", (x / window.innerWidth).toFixed(2));
+        cardRef.current.style.setProperty(
+          "--xp",
+          (x / window.innerWidth).toFixed(2)
+        );
         cardRef.current.style.setProperty("--y", y.toFixed(2));
-        cardRef.current.style.setProperty("--yp", (y / window.innerHeight).toFixed(2));
+        cardRef.current.style.setProperty(
+          "--yp",
+          (y / window.innerHeight).toFixed(2)
+        );
       }
     };
 
@@ -77,8 +77,8 @@ const GlowCard: React.FC<GlowCardProps> = ({
     return sizeMap[size];
   };
 
-  const getInlineStyles = (): React.CSSProperties => {
-    const styles: React.CSSProperties = {
+  const getInlineStyles = (): React.CSSProperties & Record<string, any> => {
+    const styles: React.CSSProperties & Record<string, any> = {
       "--base": base,
       "--spread": spread,
       "--radius": "14",
@@ -95,85 +95,71 @@ const GlowCard: React.FC<GlowCardProps> = ({
       backgroundPosition: "50% 50%",
       backgroundAttachment: "fixed",
       position: "relative",
-      touchAction: "none",
-    } as React.CSSProperties;
+      ...(width && { width: typeof width === "number" ? `${width}px` : width }),
+      ...(height && {
+        height: typeof height === "number" ? `${height}px` : height,
+      }),
+    };
 
     if (!isMobile) {
       styles.backgroundImage = `radial-gradient(
-        var(--spotlight-size) var(--spotlight-size) at
-        calc(var(--x, 0) * 1px)
-        calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) 100% 70% / 0.1), transparent
-      )`;
+      var(--spotlight-size) var(--spotlight-size) at
+      calc(var(--x, 0) * 1px)
+      calc(var(--y, 0) * 1px),
+      hsl(var(--hue, 210) 100% 70% / 0.1), transparent
+    )`;
+      styles.touchAction = "none";
     }
-
-    if (width) styles.width = typeof width === "number" ? `${width}px` : width;
-    if (height) styles.height = typeof height === "number" ? `${height}px` : height;
 
     return styles;
   };
 
-  const beforeAfterStyles = isMobile
-    ? ""
-    : `
-    [data-glow]::before,
-    [data-glow]::after {
-      pointer-events: none;
-      content: "";
-      position: absolute;
-      inset: calc(var(--border-size) * -1);
-      border: var(--border-size) solid transparent;
-      border-radius: calc(var(--radius) * 1px);
-      background-attachment: fixed;
-      background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
-      background-repeat: no-repeat;
-      background-position: 50% 50%;
-      mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
-      mask-clip: padding-box, border-box;
-      mask-composite: intersect;
-    }
-
-    [data-glow]::before {
-      background-image: radial-gradient(
-        calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
-        calc(var(--x, 0) * 1px)
-        calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) 100% 50% / 1), transparent 100%
-      );
-      filter: brightness(2);
-    }
-
-    [data-glow]::after {
-      background-image: radial-gradient(
-        calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
-        calc(var(--x, 0) * 1px)
-        calc(var(--y, 0) * 1px),
-        hsl(0 100% 100% / 1), transparent 100%
-      );
-    }
-
-    [data-glow] > [data-glow] {
-      position: absolute;
-      inset: 0;
-      will-change: filter;
-      opacity: var(--outer, 1);
-      border-radius: calc(var(--radius) * 1px);
-      border-width: calc(var(--border-size) * 20);
-      filter: blur(calc(var(--border-size) * 10));
-      background: none;
-      pointer-events: none;
-      border: none;
-    }
-
-    [data-glow] > [data-glow]::before {
-      inset: -10px;
-      border-width: 10px;
-    }
-  `;
-
   return (
     <>
-      {!isMobile && <style dangerouslySetInnerHTML={{ __html: beforeAfterStyles }} />}
+      {!isMobile && (
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          [data-glow]::before,
+          [data-glow]::after {
+            pointer-events: none;
+            content: "";
+            position: absolute;
+            inset: calc(var(--border-size) * -1);
+            border: var(--border-size) solid transparent;
+            border-radius: calc(var(--radius) * 1px);
+            background-attachment: fixed;
+            background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+            mask-clip: padding-box, border-box;
+            mask-composite: intersect;
+          }
+
+          [data-glow]::before {
+            background-image: radial-gradient(
+              calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
+              calc(var(--x, 0) * 1px)
+              calc(var(--y, 0) * 1px),
+              hsl(var(--hue, 210) 100% 50% / 1), transparent 100%
+            );
+            filter: brightness(2);
+          }
+
+          [data-glow]::after {
+            background-image: radial-gradient(
+              calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
+              calc(var(--x, 0) * 1px)
+              calc(var(--y, 0) * 1px),
+              hsl(0 100% 100% / 1), transparent 100%
+            );
+          }
+        `,
+          }}
+        />
+      )}
+
       <div
         ref={cardRef}
         data-glow
@@ -192,7 +178,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
           ${className}
         `}
       >
-        {!isMobile && <div data-glow />}
+        {!isMobile && <div data-glow className="pointer-events-none" />}
         {children}
       </div>
     </>
