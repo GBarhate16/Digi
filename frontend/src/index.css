@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Scrollbar styles for WebKit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000; /* Black background */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #facc15; /* Tailwind yellow-400 */
+  border-radius: 10px;
+  border: 2px solid #000; /* Optional border for spacing */
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #facc15 #000;
+}
