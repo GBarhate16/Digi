@@ -69,12 +69,11 @@ const TechStack = () => {
           performance, and growth.
         </p>
       </div>
-
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-16">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-16 px-4">
         {techStack.map((tech, index) => (
           <SpotlightCard
             key={index}
-            className="h-60 w-full text-white text-xl font-semibold shadow-lg bg-gradient-to-br border border-yellow-400 text-center"
+            className="w-full h-60 text-white text-xl font-semibold shadow-lg bg-gradient-to-br border border-yellow-400 text-center"
             glowColor="yellow"
           >
             <div className="flex flex-col items-center justify-center h-full space-y-3">

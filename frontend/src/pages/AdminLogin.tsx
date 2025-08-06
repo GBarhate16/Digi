@@ -63,7 +63,7 @@ const AdminLogin: React.FC = () => {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 sm:p-8 lg:p-10 shadow-2xl"
+          className="bg-gray-900/50   border border-gray-800 rounded-xl p-6 sm:p-8 lg:p-10 shadow-2xl"
         >
           <div className="text-center mb-4 sm:mb-6">
             <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">

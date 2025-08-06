@@ -77,7 +77,7 @@ const Navbar: FC = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-black/10 backdrop-blur-sm shadow-md">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-black/10 shadow-md">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3 font-sans">
           {/* Logo */}
           <div className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight font-mono">

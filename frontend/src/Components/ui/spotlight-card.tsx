@@ -1,14 +1,5 @@
-import React, { useEffect, useRef, type ReactNode, useState } from "react";
-
-interface GlowCardProps {
-  children: ReactNode;
-  className?: string;
-  glowColor?: "blue" | "purple" | "green" | "red" | "orange" | "yellow";
-  size?: "sm" | "md" | "lg";
-  width?: string | number;
-  height?: string | number;
-  customSize?: boolean;
-}
+// ✨ Drop-in optimized GlowCard.tsx
+import React, { useEffect, useRef, useState } from "react";
 
 const glowColorMap = {
   blue: { base: 220, spread: 200 },
@@ -26,7 +17,17 @@ const sizeMap = {
   xl: "w-[400px] h-[400px]",
 };
 
-const GlowCard: React.FC<GlowCardProps> = ({
+interface Props {
+  children: React.ReactNode;
+  className?: string;
+  glowColor?: keyof typeof glowColorMap;
+  size?: keyof typeof sizeMap;
+  width?: string | number;
+  height?: string | number;
+  customSize?: boolean;
+}
+
+const GlowCard: React.FC<Props> = ({
   children,
   className = "",
   glowColor = "blue",
@@ -36,19 +37,42 @@ const GlowCard: React.FC<GlowCardProps> = ({
   customSize = false,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [scrollingFast, setScrollingFast] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Check if it's mobile
   useEffect(() => {
-    const checkMobile = () => {
+    const update = () =>
       setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
+  // Detect fast scroll to disable glow temporarily
   useEffect(() => {
-    if (isMobile) return;
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const delta = Math.abs(window.scrollY - lastY);
+          setScrollingFast(delta > 20); // You can tweak threshold
+          lastY = window.scrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Update pointer position for glow
+  useEffect(() => {
+    if (isMobile || scrollingFast) return;
 
     const syncPointer = (e: PointerEvent) => {
       const { clientX: x, clientY: y } = e;
@@ -68,120 +92,48 @@ const GlowCard: React.FC<GlowCardProps> = ({
 
     document.addEventListener("pointermove", syncPointer);
     return () => document.removeEventListener("pointermove", syncPointer);
-  }, [isMobile]);
+  }, [isMobile, scrollingFast]);
 
   const { base, spread } = glowColorMap[glowColor];
+  const sizeClasses = customSize ? "" : sizeMap[size];
 
-  const getSizeClasses = () => {
-    if (customSize) return "";
-    return sizeMap[size];
-  };
-
-  const getInlineStyles = (): React.CSSProperties & Record<string, any> => {
-    const styles: React.CSSProperties & Record<string, any> = {
-      "--base": base,
-      "--spread": spread,
-      "--radius": "14",
-      "--border": "3",
-      "--backdrop": "hsl(0 0% 60% / 0.12)",
-      "--backup-border": "var(--backdrop)",
-      "--size": "200",
-      "--outer": "1",
-      "--border-size": "calc(var(--border, 2) * 1px)",
-      "--spotlight-size": "calc(var(--size, 150) * 1px)",
-      "--hue": "calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))",
-      backgroundColor: "var(--backdrop)",
-      border: "var(--border-size) solid var(--backup-border)",
-      backgroundPosition: "50% 50%",
-      backgroundAttachment: "fixed",
-      position: "relative",
-      ...(width && { width: typeof width === "number" ? `${width}px` : width }),
-      ...(height && {
-        height: typeof height === "number" ? `${height}px` : height,
-      }),
-    };
-
-    if (!isMobile) {
-      styles.backgroundImage = `radial-gradient(
-      var(--spotlight-size) var(--spotlight-size) at
-      calc(var(--x, 0) * 1px)
-      calc(var(--y, 0) * 1px),
-      hsl(var(--hue, 210) 100% 70% / 0.1), transparent
-    )`;
-      styles.touchAction = "none";
-    }
-
-    return styles;
-  };
+  const style = {
+    "--base": base,
+    "--spread": spread,
+    "--radius": "14",
+    "--border": "2",
+    "--size": "160",
+    "--outer": "1",
+    "--border-size": "calc(var(--border) * 1px)",
+    "--spotlight-size": "calc(var(--size) * 1px)",
+    "--hue": "calc(var(--base) + (var(--xp, 0) * var(--spread)))",
+    ...(width && { width: typeof width === "number" ? `${width}px` : width }),
+    ...(height && {
+      height: typeof height === "number" ? `${height}px` : height,
+    }),
+    backgroundColor: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    transition: "transform 0.3s ease",
+    willChange: "transform",
+    ...(isMobile || scrollingFast
+      ? {}
+      : {
+          backgroundImage: `radial-gradient(
+            var(--spotlight-size) var(--spotlight-size) at
+            calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+            hsl(var(--hue) 100% 70% / 0.1), transparent
+          )`,
+        }),
+  } as React.CSSProperties & Record<string, string | number>;
 
   return (
-    <>
-      {!isMobile && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-          [data-glow]::before,
-          [data-glow]::after {
-            pointer-events: none;
-            content: "";
-            position: absolute;
-            inset: calc(var(--border-size) * -1);
-            border: var(--border-size) solid transparent;
-            border-radius: calc(var(--radius) * 1px);
-            background-attachment: fixed;
-            background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
-            background-repeat: no-repeat;
-            background-position: 50% 50%;
-            mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
-            mask-clip: padding-box, border-box;
-            mask-composite: intersect;
-          }
-
-          [data-glow]::before {
-            background-image: radial-gradient(
-              calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
-              calc(var(--x, 0) * 1px)
-              calc(var(--y, 0) * 1px),
-              hsl(var(--hue, 210) 100% 50% / 1), transparent 100%
-            );
-            filter: brightness(2);
-          }
-
-          [data-glow]::after {
-            background-image: radial-gradient(
-              calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
-              calc(var(--x, 0) * 1px)
-              calc(var(--y, 0) * 1px),
-              hsl(0 100% 100% / 1), transparent 100%
-            );
-          }
-        `,
-          }}
-        />
-      )}
-
-      <div
-        ref={cardRef}
-        data-glow
-        style={getInlineStyles()}
-        className={`
-          ${getSizeClasses()}
-          ${!customSize ? "aspect-[3/4]" : ""}
-          rounded-2xl 
-          relative 
-          grid 
-          grid-rows-[1fr_auto] 
-          shadow-[0_1rem_2rem_-1rem_black] 
-          p-4 
-          gap-4 
-          backdrop-blur-[5px]
-          ${className}
-        `}
-      >
-        {!isMobile && <div data-glow className="pointer-events-none" />}
-        {children}
-      </div>
-    </>
+    <div
+      ref={cardRef}
+      className={`relative rounded-2xl p-4 shadow-xl ${sizeClasses} ${className}`}
+      style={style}
+    >
+      {children}
+    </div>
   );
 };
 

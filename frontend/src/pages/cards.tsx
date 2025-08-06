@@ -131,7 +131,7 @@ export const FeaturesSection = () => {
           return (
             <div
               key={index}
-              className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 p-6 text-white shadow-md sm:hover:scale-[1.03] sm:hover:bg-white/10 transition-all duration-500 ease-in-out flex flex-col items-center text-center"
+              className="rounded-2xl bg-white/5   border border-white/10 p-6 text-white shadow-md sm:hover:scale-[1.03] sm:hover:bg-white/10 transition-all duration-500 ease-in-out flex flex-col items-center text-center"
               style={{
                 touchAction: "manipulation",
                 WebkitTapHighlightColor: "transparent",
@@ -158,56 +158,48 @@ export const WhatWeProvide = ({ screenType }: Props) => {
   return (
     <div className="w-full flex justify-center py-10 px-4">
       <div
-        className={`${
-          isMobile
-            ? "flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory"
-            : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16"
-        } max-w-6xl`}
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
+                   gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 max-w-6xl"
       >
         {serviceData.map((service, index) => {
           const Icon = service.icon;
           return (
-            <div
+            <GlowCard
               key={index}
-              className={`${
-                isMobile ? "min-w-[80%] snap-center shrink-0" : ""
+              className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
+                isMobile ? "" : "hover:scale-105"
               }`}
             >
-              <GlowCard
-                className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
-                  isMobile ? "" : "hover:scale-105"
-                }`}
-              >
-                {/* Top Icon */}
-                <div className="flex justify-center mb-4">
-                  <div
-                    className={`w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 ${
-                      isMobile ? "" : "animate-soft-glow"
-                    }`}
-                  >
-                    <Icon className="text-yellow-300 w-6 h-6" />
-                  </div>
+              {/* Top Icon */}
+              <div className="flex justify-center mb-4">
+                <div
+                  className={`w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 ${
+                    isMobile ? "" : "animate-soft-glow"
+                  }`}
+                >
+                  <Icon className="text-yellow-300 w-6 h-6" />
                 </div>
+              </div>
 
-                {/* Title & Desc */}
-                <div className="flex flex-col items-center text-center mb-4 flex-grow">
-                  <h3 className="text-lg font-bold text-white mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-gray-300">{service.description}</p>
-                </div>
+              {/* Title & Desc */}
+              <div className="flex flex-col items-center text-center mb-4 flex-grow">
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-sm text-gray-300">{service.description}</p>
+              </div>
 
-                {/* Bullet Points */}
-                <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-2">
-                  {service.points.map((point, i) => (
-                    <li key={i}>{point}</li>
-                  ))}
-                </ul>
-              </GlowCard>
-            </div>
+              {/* Bullet Points */}
+              <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-2">
+                {service.points.map((point, i) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
+            </GlowCard>
           );
         })}
       </div>
     </div>
   );
 };
+

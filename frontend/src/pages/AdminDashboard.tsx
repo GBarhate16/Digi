@@ -239,7 +239,7 @@ const AdminDashboard: React.FC = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800 fixed top-0 left-0 right-0 z-50 w-full">
+      <header className="bg-gray-900/50 border-b border-gray-800 fixed top-0 left-0 right-0 z-50 w-full">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-3 sm:gap-4">
             {/* Logo and Live Status */}
@@ -297,7 +297,7 @@ const AdminDashboard: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="lg:hidden bg-gray-900/90 backdrop-blur-sm border-b border-gray-800 px-4 py-3"
+                className="lg:hidden bg-gray-900/90   border-b border-gray-800 px-4 py-3"
               >
                 <Button
                   onClick={() => {
@@ -324,7 +324,7 @@ const AdminDashboard: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
+            className="bg-gray-900/50   border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
           >
             <div className="flex items-center">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
@@ -341,7 +341,7 @@ const AdminDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
+            className="bg-gray-900/50   border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
           >
             <div className="flex items-center">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
@@ -358,7 +358,7 @@ const AdminDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
+            className="bg-gray-900/50   border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6"
           >
             <div className="flex items-center">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
@@ -428,7 +428,7 @@ const AdminDashboard: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6 hover:border-gray-700 transition-colors relative"
+                    className="bg-gray-900/50   border border-gray-800 rounded-xl p-4 sm:p-5 lg:p-6 hover:border-gray-700 transition-colors relative"
                   >
                     <Button
                       onClick={() => handleDelete(submission._id)}

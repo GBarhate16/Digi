@@ -29,7 +29,7 @@ export function ButtonColorful({
           "absolute inset-0",
           "bg-gradient-to-r via-yellow-500 ",
           "opacity-40 group-hover:opacity-80",
-          "blur transition-opacity duration-500"
+          "transition-opacity duration-500"
         )}
       />
 

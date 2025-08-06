@@ -84,7 +84,7 @@ const Feature = ({
   return (
     <div
       className={cn(
-        "flex flex-col lg:border-r py-15 relative group/feature bg-white/5 backdrop-blur-md rounded-xl border-white/5 transition duration-300",
+        "flex flex-col lg:border-r py-15 relative group/feature bg-white/5 rounded-xl border-white/5 transition duration-300",
         "cursor-default sm:cursor-pointer", // Add this line
         "sm:hover:bg-yellow-100/20",
         (index === 0 || index === 4) && "lg:border-l border-white/20",
