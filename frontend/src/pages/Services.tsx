@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 
 const Services: FC = () => {
   useLenis();
-  const [, setScreenType] = useState<
+
+  const [screenType, setScreenType] = useState<
     "mobile" | "tablet" | "laptop" | "desktop"
   >("desktop");
 
@@ -24,6 +25,7 @@ const Services: FC = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
     <section
       id="services"
@@ -54,7 +56,7 @@ const Services: FC = () => {
 
       <div className="mt-8 sm:mt-10 md:mt-12">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-          <WhatWeProvide />
+          <WhatWeProvide screenType={screenType} />
         </div>
       </div>
     </section>

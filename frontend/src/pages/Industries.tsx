@@ -10,7 +10,9 @@ const Industries: FC = () => {
   return (
     <section
       id="industries"
-      className="relative bg-black text-white px-4 pt-5 sm:pt-2 md:pt-5 lg:pt-10 pb-16 sm:pb-20 md:pb-24 scroll-mt-24"
+      className="relative bg-black text-white  pt-12 sm:pt-14 md:pt-16 lg:pt-20
+             pb-12 sm:pb-14 md:pb-16 lg:pb-20
+             px-4 sm:px-6 md:px-10 lg:px-16"
     >
       {/* Header Content */}
       <div className="flex flex-col items-center text-center max-w-3xl mx-auto space-y-4 sm:space-y-6">

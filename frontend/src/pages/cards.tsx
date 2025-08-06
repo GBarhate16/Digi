@@ -11,6 +11,7 @@ import {
   Users,
   Cpu,
 } from "lucide-react";
+import { useLenis } from "../hooks/lenis";
 
 const cardData = [
   {
@@ -121,6 +122,7 @@ const serviceData = [
 ];
 
 export const FeaturesSection = () => {
+  useLenis();
   return (
     <div className="w-full flex justify-center py-10 px-4 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl">
@@ -146,7 +148,12 @@ export const FeaturesSection = () => {
   );
 };
 
-export const WhatWeProvide = () => {
+interface Props {
+  screenType: "mobile" | "tablet" | "laptop" | "desktop";
+}
+export const WhatWeProvide = ({ screenType }: Props) => {
+  const isMobile = screenType === "mobile";
+
   return (
     <div className="w-full flex justify-center py-10 px-4">
       <div
@@ -158,26 +165,31 @@ export const WhatWeProvide = () => {
           return (
             <GlowCard
               key={index}
-              className="p-4 sm:p-6 h-full transition-transform sm:hover:scale-105"
-              style={{
-                touchAction: "pan-y",
-                WebkitTapHighlightColor: "transparent",
-              }}
+              className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
+                isMobile ? "" : "hover:scale-105"
+              }`}
             >
-              <div className="mb-6 flex items-center justify-center">
-                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 animate-soft-glow">
+              {/* Top: Centered Icon */}
+              <div className="flex justify-center mb-4">
+                <div
+                  className={`w-14 h-14 flex items-center justify-center rounded-full bg-black border border-yellow-200 p-4 ${
+                    isMobile ? "" : "animate-soft-glow"
+                  }`}
+                >
                   <Icon className="text-yellow-300 w-6 h-6" />
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-white mb-3">
-                {service.title}
-              </h3>
-              <p className="text-sm text-gray-300 mb-2">
-                {service.description}
-              </p>
+              {/* Middle: Title & Description */}
+              <div className="flex flex-col items-center text-center mb-4 flex-grow">
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-sm text-gray-300">{service.description}</p>
+              </div>
 
-              <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-auto">
+              {/* Bottom: Bullet Points */}
+              <ul className="list-disc text-left text-sm text-white space-y-2 pl-5 mt-2">
                 {service.points.map((point, i) => (
                   <li key={i}>{point}</li>
                 ))}

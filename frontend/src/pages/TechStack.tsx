@@ -1,5 +1,3 @@
-// components/TechStack.tsx
-import type { FC } from "react";
 import SpotlightCard from "../Components/ui/spotlight-card";
 import {
   SiMysql,
@@ -45,45 +43,50 @@ const techStack = [
   { name: "MongoDB", icon: <SiMongodb size={40} className="text-green-500" /> },
 ];
 
-const TechStack: FC = () => {
+const TechStack = () => {
   useLenis();
+
   return (
-    <section
+    <div
       id="tech-stack"
-      className="w-full bg-black px-4 sm:pt-2 md:pt-5 lg:pt-10 pb-16 sm:pb-20 md:pb-24 scroll-mt-24 pt-5"
+      className="w-full px-4 py-12 bg-black scroll-mt-24 pt-0"
     >
-      <div className="flex flex-col items-center space-y-4 max-w-3xl mx-auto text-center">
+      <div className="flex flex-col items-center space-y-4 max-w-3xl mx-auto">
+        {/* Icon with glow */}
         <div className="relative w-14 h-14 flex items-center justify-center bg-[#1f2230] rounded-full shadow-lg">
           <div className="absolute w-full h-full rounded-full bg-purple-500 opacity-30 blur-md animate-ping" />
           <Code2 className="w-7 h-7 text-purple-300 z-10" />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
-          Technology{" "}
+        {/* Gradient Title */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
+          <span className="text-white">Technology </span>
           <span className="bg-gradient-to-r from-purple-400 to-yellow-500 bg-clip-text text-transparent">
             Stack
           </span>
         </h1>
-
-        <p className="text-lg sm:text-xl text-gray-300 px-4 mt-2 leading-relaxed">
+        <p className="text-lg sm:text-xl text-gray-300 px-4 mt-2 leading-relaxed text-center">
           Engineering excellence with a stack designed for flexibility,
           performance, and growth.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16 mt-16 px-4">
+      {/* Grid Section */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-16">
         {techStack.map((tech, index) => (
           <SpotlightCard
             key={index}
-            className="h-64 rounded-2xl flex flex-col items-center justify-center text-white text-xl font-semibold shadow-lg bg-gradient-to-br border border-yellow-400"
-            spotlightColor="rgba(139, 128, 0, 1)"
+            className="h-60 w-full text-white text-xl font-semibold shadow-lg bg-gradient-to-br border border-yellow-400 text-center"
+            glowColor="yellow"
           >
-            <div className="mb-4">{tech.icon}</div>
-            <span>{tech.name}</span>
+            <div className="flex flex-col items-center justify-center h-full space-y-3">
+              <div>{tech.icon}</div>
+              <span>{tech.name}</span>
+            </div>
           </SpotlightCard>
         ))}
       </div>
-    </section>
+    </div>
   );
 };
 

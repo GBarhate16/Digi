@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, type ReactNode } from 'react';
+import React, { useEffect, useRef, type ReactNode } from "react";
 
 interface GlowCardProps {
   children: ReactNode;
   className?: string;
-  glowColor?: 'blue' | 'purple' | 'green' | 'red' | 'orange';
-  size?: 'sm' | 'md' | 'lg';
+  glowColor?: "blue" | "purple" | "green" | "red" | "orange" | "yellow";
+  size?: "sm" | "md" | "lg";
   width?: string | number;
   height?: string | number;
   customSize?: boolean;
-  style?: React.CSSProperties;
   spotlightColor?: string;
+  style?: React.CSSProperties;
 }
 
 const glowColorMap = {
@@ -18,22 +18,21 @@ const glowColorMap = {
   green: { base: 120, spread: 200 },
   red: { base: 0, spread: 200 },
   orange: { base: 30, spread: 200 },
+  yellow: { base: 60, spread: 150 },
 };
 
 const sizeMap = {
-  sm: 'w-56 h-64',        // increased width from w-48
-  md: 'w-72 h-80',        // increased width from w-64
-  lg: 'w-96 h-96',        // increased width from w-80
-  xl: 'w-[400px] h-[400px]', // increased from w-[350px]
+  sm: "w-56 h-64", // increased width from w-48
+  md: "w-72 h-80", // increased width from w-64
+  lg: "w-96 h-96", // increased width from w-80
+  xl: "w-[400px] h-[400px]", // increased from w-[350px]
 };
-
-
 
 const GlowCard: React.FC<GlowCardProps> = ({
   children,
-  className = '',
-  glowColor = 'blue',
-  size = 'md',
+  className = "",
+  glowColor = "blue",
+  size = "md",
   width,
   height,
   customSize = false,
@@ -45,54 +44,62 @@ const GlowCard: React.FC<GlowCardProps> = ({
       const { clientX: x, clientY: y } = e;
 
       if (cardRef.current) {
-        cardRef.current.style.setProperty('--x', x.toFixed(2));
-        cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-        cardRef.current.style.setProperty('--y', y.toFixed(2));
-        cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+        cardRef.current.style.setProperty("--x", x.toFixed(2));
+        cardRef.current.style.setProperty(
+          "--xp",
+          (x / window.innerWidth).toFixed(2)
+        );
+        cardRef.current.style.setProperty("--y", y.toFixed(2));
+        cardRef.current.style.setProperty(
+          "--yp",
+          (y / window.innerHeight).toFixed(2)
+        );
       }
     };
 
-    document.addEventListener('pointermove', syncPointer);
-    return () => document.removeEventListener('pointermove', syncPointer);
+    document.addEventListener("pointermove", syncPointer);
+    return () => document.removeEventListener("pointermove", syncPointer);
   }, []);
 
   const { base, spread } = glowColorMap[glowColor];
 
   const getSizeClasses = () => {
-    if (customSize) return '';
+    if (customSize) return "";
     return sizeMap[size];
   };
 
   const getInlineStyles = (): React.CSSProperties => {
     const styles: React.CSSProperties = {
-      '--base': base,
-      '--spread': spread,
-      '--radius': '14',
-      '--border': '3',
-      '--backdrop': 'hsl(0 0% 60% / 0.12)',
-      '--backup-border': 'var(--backdrop)',
-      '--size': '200',
-      '--outer': '1',
-      '--border-size': 'calc(var(--border, 2) * 1px)',
-      '--spotlight-size': 'calc(var(--size, 150) * 1px)',
-      '--hue': 'calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))',
+      "--base": base,
+      "--spread": spread,
+      "--radius": "14",
+      "--border": "3",
+      "--backdrop": "hsl(0 0% 60% / 0.12)",
+      "--backup-border": "var(--backdrop)",
+      "--size": "200",
+      "--outer": "1",
+      "--border-size": "calc(var(--border, 2) * 1px)",
+      "--spotlight-size": "calc(var(--size, 150) * 1px)",
+      "--hue": "calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))",
       backgroundImage: `radial-gradient(
         var(--spotlight-size) var(--spotlight-size) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
         hsl(var(--hue, 210) 100% 70% / 0.1), transparent
       )`,
-      backgroundColor: 'var(--backdrop)',
-      backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
-      backgroundPosition: '50% 50%',
-      backgroundAttachment: 'fixed',
-      border: 'var(--border-size) solid var(--backup-border)',
-      position: 'relative',
-      touchAction: 'none',
+      backgroundColor: "var(--backdrop)",
+      backgroundSize:
+        "calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))",
+      backgroundPosition: "50% 50%",
+      backgroundAttachment: "fixed",
+      border: "var(--border-size) solid var(--backup-border)",
+      position: "relative",
+      touchAction: "none",
     } as React.CSSProperties;
 
-    if (width) styles.width = typeof width === 'number' ? `${width}px` : width;
-    if (height) styles.height = typeof height === 'number' ? `${height}px` : height;
+    if (width) styles.width = typeof width === "number" ? `${width}px` : width;
+    if (height)
+      styles.height = typeof height === "number" ? `${height}px` : height;
 
     return styles;
   };
@@ -162,7 +169,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
         style={getInlineStyles()}
         className={`
           ${getSizeClasses()}
-          ${!customSize ? 'aspect-[3/4]' : ''}
+          ${!customSize ? "aspect-[3/4]" : ""}
           rounded-2xl 
           relative 
           grid 
