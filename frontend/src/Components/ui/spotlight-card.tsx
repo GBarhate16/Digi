@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, type ReactNode } from "react";
+import React, { useEffect, useRef, type ReactNode, useState } from "react";
 
 interface GlowCardProps {
   children: ReactNode;
@@ -22,13 +22,14 @@ const glowColorMap = {
 };
 
 const sizeMap = {
-  sm: "w-56 h-64", // increased width from w-48
-  md: "w-72 h-80", // increased width from w-64
-  lg: "w-96 h-96", // increased width from w-80
-  xl: "w-[400px] h-[400px]", // increased from w-[350px]
+  sm: "w-56 h-64",
+  md: "w-72 h-80",
+  lg: "w-96 h-96",
+  xl: "w-[400px] h-[400px]",
 };
 
 const GlowCard: React.FC<GlowCardProps> = ({
+
   children,
   className = "",
   glowColor = "blue",
@@ -38,28 +39,36 @@ const GlowCard: React.FC<GlowCardProps> = ({
   customSize = false,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Detect mobile devices using window width or touch capability
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
+    };
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return;
+
     const syncPointer = (e: PointerEvent) => {
       const { clientX: x, clientY: y } = e;
 
       if (cardRef.current) {
         cardRef.current.style.setProperty("--x", x.toFixed(2));
-        cardRef.current.style.setProperty(
-          "--xp",
-          (x / window.innerWidth).toFixed(2)
-        );
+        cardRef.current.style.setProperty("--xp", (x / window.innerWidth).toFixed(2));
         cardRef.current.style.setProperty("--y", y.toFixed(2));
-        cardRef.current.style.setProperty(
-          "--yp",
-          (y / window.innerHeight).toFixed(2)
-        );
+        cardRef.current.style.setProperty("--yp", (y / window.innerHeight).toFixed(2));
       }
     };
 
     document.addEventListener("pointermove", syncPointer);
     return () => document.removeEventListener("pointermove", syncPointer);
-  }, []);
+  }, [isMobile]);
 
   const { base, spread } = glowColorMap[glowColor];
 
@@ -81,30 +90,32 @@ const GlowCard: React.FC<GlowCardProps> = ({
       "--border-size": "calc(var(--border, 2) * 1px)",
       "--spotlight-size": "calc(var(--size, 150) * 1px)",
       "--hue": "calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))",
-      backgroundImage: `radial-gradient(
-        var(--spotlight-size) var(--spotlight-size) at
-        calc(var(--x, 0) * 1px)
-        calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) 100% 70% / 0.1), transparent
-      )`,
       backgroundColor: "var(--backdrop)",
-      backgroundSize:
-        "calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))",
+      border: "var(--border-size) solid var(--backup-border)",
       backgroundPosition: "50% 50%",
       backgroundAttachment: "fixed",
-      border: "var(--border-size) solid var(--backup-border)",
       position: "relative",
       touchAction: "none",
     } as React.CSSProperties;
 
+    if (!isMobile) {
+      styles.backgroundImage = `radial-gradient(
+        var(--spotlight-size) var(--spotlight-size) at
+        calc(var(--x, 0) * 1px)
+        calc(var(--y, 0) * 1px),
+        hsl(var(--hue, 210) 100% 70% / 0.1), transparent
+      )`;
+    }
+
     if (width) styles.width = typeof width === "number" ? `${width}px` : width;
-    if (height)
-      styles.height = typeof height === "number" ? `${height}px` : height;
+    if (height) styles.height = typeof height === "number" ? `${height}px` : height;
 
     return styles;
   };
 
-  const beforeAfterStyles = `
+  const beforeAfterStyles = isMobile
+    ? ""
+    : `
     [data-glow]::before,
     [data-glow]::after {
       pointer-events: none;
@@ -162,7 +173,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: beforeAfterStyles }} />
+      {!isMobile && <style dangerouslySetInnerHTML={{ __html: beforeAfterStyles }} />}
       <div
         ref={cardRef}
         data-glow
@@ -181,7 +192,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
           ${className}
         `}
       >
-        <div data-glow />
+        {!isMobile && <div data-glow />}
         {children}
       </div>
     </>

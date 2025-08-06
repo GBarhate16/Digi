@@ -152,6 +152,7 @@ interface Props {
   screenType: "mobile" | "tablet" | "laptop" | "desktop";
 }
 export const WhatWeProvide = ({ screenType }: Props) => {
+  useLenis();
   const isMobile = screenType === "mobile";
 
   return (

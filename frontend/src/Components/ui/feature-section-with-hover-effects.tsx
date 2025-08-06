@@ -68,7 +68,7 @@ const FeaturesSectionWithHoverEffects = () => {
       ))}
     </div>
   );
-}
+};
 
 const Feature = ({
   title,
@@ -84,7 +84,9 @@ const Feature = ({
   return (
     <div
       className={cn(
-        "flex flex-col lg:border-r py-15 relative group/feature bg-white/5 backdrop-blur-md rounded-xl border-white/5 transition duration-300 hover:bg-yellow-100/20",
+        "flex flex-col lg:border-r py-15 relative group/feature bg-white/5 backdrop-blur-md rounded-xl border-white/5 transition duration-300",
+        "cursor-default sm:cursor-pointer", // Add this line
+        "sm:hover:bg-yellow-100/20",
         (index === 0 || index === 4) && "lg:border-l border-white/20",
         index < 4 && "lg:border-b border-white/20"
       )}
@@ -92,8 +94,8 @@ const Feature = ({
       <div className="mb-6 relative z-10 px-12 text-white text-3xl">{icon}</div>
 
       <div className="text-xl font-bold mb-3 relative z-10 px-12">
-        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full group-hover/feature:bg-yellow-400 transition-all duration-200 origin-center" />
-        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-white">
+        <div className="absolute left-0 inset-y-0 h-6 sm:group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full sm:group-hover/feature:bg-yellow-400 transition-all duration-200 origin-center" />
+        <span className="sm:group-hover/feature:translate-x-2 transition duration-200 inline-block text-white">
           {title}
         </span>
       </div>
