@@ -9,7 +9,7 @@ import {
 } from "./ui/navigation-menu";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
-
+import { Link } from "react-router-dom";
 
 const menuItems = [
   { label: "Home", href: "/" },
@@ -19,7 +19,6 @@ const menuItems = [
   { label: "Tech Stack", href: "#tech-stack" },
   { label: "Testimonials", href: "#testimonials" },
 ];
-
 
 const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -102,12 +101,14 @@ const Navbar: FC = () => {
               <NavigationMenuList className="flex gap-4 sm:gap-6">
                 {menuItems.map((item) => (
                   <NavigationMenuItem key={item.label}>
-                    <NavigationMenuLink
-                      href={item.href}
-                      className="text-white text-sm sm:text-base font-semibold hover:text-yellow-400 transition-colors"
-                      onClick={handleItemClick}
-                    >
-                      {item.label}
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={item.href}
+                        className="text-white text-sm sm:text-base font-semibold hover:text-yellow-400 transition-colors"
+                        onClick={handleItemClick}
+                      >
+                        {item.label}
+                      </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
@@ -141,13 +142,13 @@ const Navbar: FC = () => {
                 <ul className="space-y-2">
                   {menuItems.map((item) => (
                     <li key={item.label}>
-                      <a
-                        href={item.href}
+                      <Link
+                        to={item.href}
                         onClick={handleItemClick}
                         className="block text-white text-base font-semibold hover:text-yellow-400 transition py-1"
                       >
                         {item.label}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                   <li>
