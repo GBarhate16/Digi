@@ -2,11 +2,10 @@
 import type { FC } from "react";
 import { Factory } from "lucide-react";
 import FeaturesSectionWithHoverEffects from "../Components/ui/feature-section-with-hover-effects";
-import { useLenis } from "../hooks/lenis";
+
 import Threads from "../Components/ui/Threads";
 
 const Industries: FC = () => {
-  useLenis();
   return (
     <section
       id="industries"

@@ -11,7 +11,6 @@ import {
   Users,
   Cpu,
 } from "lucide-react";
-import { useLenis } from "../hooks/lenis";
 
 const cardData = [
   {
@@ -122,16 +121,15 @@ const serviceData = [
 ];
 
 export const FeaturesSection = () => {
-  useLenis();
   return (
-    <div className="w-full flex justify-center py-10 px-4 ">
+    <div className="w-full flex justify-center py-10 px-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl">
         {cardData.map((card, index) => {
           const Icon = card.icon;
           return (
             <div
               key={index}
-              className="rounded-2xl bg-white/5   border border-white/10 p-6 text-white shadow-md sm:hover:scale-[1.03] sm:hover:bg-white/10 transition-all duration-500 ease-in-out flex flex-col items-center text-center"
+              className="card-optimized gpu-accelerated hover-optimized rounded-2xl bg-white/5 border border-white/10 p-6 text-white shadow-md sm:hover:scale-[1.03] sm:hover:bg-white/10 flex flex-col items-center text-center"
               style={{
                 touchAction: "manipulation",
                 WebkitTapHighlightColor: "transparent",
@@ -152,7 +150,6 @@ interface Props {
   screenType: "mobile" | "tablet" | "laptop" | "desktop";
 }
 export const WhatWeProvide = ({ screenType }: Props) => {
-  useLenis();
   const isMobile = screenType === "mobile";
 
   return (
@@ -166,7 +163,7 @@ export const WhatWeProvide = ({ screenType }: Props) => {
           return (
             <GlowCard
               key={index}
-              className={`flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
+              className={`card-optimized gpu-accelerated flex flex-col justify-between p-4 sm:p-6 h-full transition-transform ${
                 isMobile ? "" : "hover:scale-105"
               }`}
             >

@@ -1,5 +1,54 @@
 @import "tailwindcss";
 
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  /* Optimize for animations and transforms */
+  will-change: scroll-position;
+}
+
+/* Optimize for GPU acceleration */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Reduce layout thrashing for cards */
+.card-optimized {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+/* Smooth animations */
+.animate-soft-glow {
+  animation: soft-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes soft-glow {
+  0% {
+    filter: brightness(1) drop-shadow(0 0 5px rgba(251, 191, 36, 0.3));
+  }
+  100% {
+    filter: brightness(1.1) drop-shadow(0 0 15px rgba(251, 191, 36, 0.6));
+  }
+}
+
+/* Optimize hover effects */
+.hover-optimized {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Scrollbar styles for WebKit browsers */
 ::-webkit-scrollbar {
   width: 10px;

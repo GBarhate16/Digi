@@ -1,11 +1,10 @@
 import { Brain } from "lucide-react";
 import type { FC } from "react";
 import { WhatWeProvide } from "./cards";
-import { useLenis } from "../hooks/lenis";
 import { useState, useEffect } from "react";
 
 const Services: FC = () => {
-  useLenis();
+
 
   const [screenType, setScreenType] = useState<
     "mobile" | "tablet" | "laptop" | "desktop"

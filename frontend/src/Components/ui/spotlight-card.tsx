@@ -1,5 +1,6 @@
 // ✨ Drop-in optimized GlowCard.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useLenisContext } from "../../hooks/lenis.tsx";
 
 const glowColorMap = {
   blue: { base: 220, spread: 200 },
@@ -39,6 +40,8 @@ const GlowCard: React.FC<Props> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [scrollingFast, setScrollingFast] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const lenis = useLenisContext();
+  const pointerTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Check if it's mobile
   useEffect(() => {
@@ -49,32 +52,17 @@ const GlowCard: React.FC<Props> = ({
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Detect fast scroll to disable glow temporarily
-  useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
+  // Throttled pointer move handler
+  const syncPointer = useCallback((e: PointerEvent) => {
+    if (isMobile || scrollingFast || !cardRef.current) return;
 
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const delta = Math.abs(window.scrollY - lastY);
-          setScrollingFast(delta > 20); // You can tweak threshold
-          lastY = window.scrollY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+    // Clear existing timeout
+    if (pointerTimeoutRef.current) {
+      clearTimeout(pointerTimeoutRef.current);
+    }
 
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Update pointer position for glow
-  useEffect(() => {
-    if (isMobile || scrollingFast) return;
-
-    const syncPointer = (e: PointerEvent) => {
+    // Throttle pointer updates
+    pointerTimeoutRef.current = setTimeout(() => {
       const { clientX: x, clientY: y } = e;
       if (cardRef.current) {
         cardRef.current.style.setProperty("--x", x.toFixed(2));
@@ -88,11 +76,34 @@ const GlowCard: React.FC<Props> = ({
           (y / window.innerHeight).toFixed(2)
         );
       }
+    }, 16); // ~60fps
+  }, [isMobile, scrollingFast]);
+
+  // Update pointer position for glow (optimized)
+  useEffect(() => {
+    if (isMobile || scrollingFast) return;
+
+    document.addEventListener("pointermove", syncPointer, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", syncPointer);
+      if (pointerTimeoutRef.current) {
+        clearTimeout(pointerTimeoutRef.current);
+      }
+    };
+  }, [syncPointer, isMobile, scrollingFast]);
+
+  // Listen to Lenis scroll events for fast scroll detection
+  useEffect(() => {
+    if (!lenis) return;
+
+    const handleScroll = (e: { velocity: number }) => {
+      const velocity = Math.abs(e.velocity);
+      setScrollingFast(velocity > 0.5); // Adjust threshold as needed
     };
 
-    document.addEventListener("pointermove", syncPointer);
-    return () => document.removeEventListener("pointermove", syncPointer);
-  }, [isMobile, scrollingFast]);
+    lenis.on('scroll', handleScroll);
+    return () => lenis.off('scroll', handleScroll);
+  }, [lenis]);
 
   const { base, spread } = glowColorMap[glowColor];
   const sizeClasses = customSize ? "" : sizeMap[size];

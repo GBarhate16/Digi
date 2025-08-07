@@ -14,8 +14,8 @@ import { Menu, X } from "lucide-react";
 const menuItems = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
-  { label: "Services", href: "#services" },
-  { label: "Industries", href: "#industries" },
+  { label: "Services", href: "/services" },
+  { label: "Industries", href: "/industries" },
   { label: "Tech Stack", href: "#tech-stack" },
   { label: "Testimonials", href: "#testimonials" },
 ];

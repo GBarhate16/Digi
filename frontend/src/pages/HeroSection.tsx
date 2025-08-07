@@ -1,13 +1,10 @@
 // src/pages/HeroSection.tsx
 import type { FC } from "react";
-import { useLenis } from "../hooks/lenis";
 import ButtonColorful from "../Components/ui/button-colorful";
 import DarkVeil from "../Components/ui/darkveil";
 import { FeaturesSection } from "./cards";
 
 const HeroSection: FC = () => {
-  useLenis();
-
   return (
     <div
       id="home"

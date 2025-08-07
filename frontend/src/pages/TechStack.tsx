@@ -14,7 +14,7 @@ import {
 } from "react-icons/si";
 import { DiJava } from "react-icons/di";
 import { Code2 } from "lucide-react";
-import { useLenis } from "../hooks/lenis";
+
 
 const techStack = [
   { name: "MySQL", icon: <SiMysql size={40} className="text-blue-600" /> },
@@ -44,7 +44,7 @@ const techStack = [
 ];
 
 const TechStack = () => {
-  useLenis();
+ 
 
   return (
     <div

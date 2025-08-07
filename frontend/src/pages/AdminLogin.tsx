@@ -48,7 +48,7 @@ const AdminLogin: React.FC = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-sm sm:max-w-md lg:max-w-lg max-w-screen-2xl"
+        className="w-full sm:max-w-md lg:max-w-lg max-w-screen-2xl"
       >
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">
