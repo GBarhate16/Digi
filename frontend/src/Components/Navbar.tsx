@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, memo, useMemo } from "react";
 import type { FC } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -9,16 +9,74 @@ import {
 } from "./ui/navigation-menu";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const menuItems = [
-  { label: "Home", href: "/" },
+  { label: "Home", href: "/#home" },
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Industries", href: "/industries" },
-  { label: "Tech Stack", href: "#tech-stack" },
-  { label: "Testimonials", href: "#testimonials" },
+  { label: "Tech Stack", href: "/#tech-stack" },
+  { label: "Testimonials", href: "/#testimonials" },
 ];
+
+// Memoized menu item component
+const MenuItem = memo(({ item, handleItemClick, setIsOpen }: { 
+  item: typeof menuItems[0]; 
+  handleItemClick: (href: string) => void;
+  setIsOpen: (open: boolean) => void;
+}) => {
+  return (
+    <NavigationMenuItem key={item.label}>
+      <NavigationMenuLink asChild>
+        {item.href.startsWith("/#") ? (
+          <button
+            onClick={() => handleItemClick(item.href)}
+            className="text-white text-sm sm:text-base font-semibold hover:text-yellow-400 transition-colors cursor-pointer"
+          >
+            {item.label}
+          </button>
+        ) : (
+          <Link
+            to={item.href}
+            className="text-white text-sm sm:text-base font-semibold hover:text-yellow-400 transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            {item.label}
+          </Link>
+        )}
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  );
+});
+
+// Memoized mobile menu item component
+const MobileMenuItem = memo(({ item, handleItemClick, setIsOpen }: { 
+  item: typeof menuItems[0]; 
+  handleItemClick: (href: string) => void;
+  setIsOpen: (open: boolean) => void;
+}) => {
+  return (
+    <li key={item.label}>
+      {item.href.startsWith("/#") ? (
+        <button
+          onClick={() => handleItemClick(item.href)}
+          className="block w-full text-left text-white text-base font-semibold hover:text-yellow-400 transition py-1"
+        >
+          {item.label}
+        </button>
+      ) : (
+        <Link
+          to={item.href}
+          onClick={() => setIsOpen(false)}
+          className="block text-white text-base font-semibold hover:text-yellow-400 transition py-1"
+        >
+          {item.label}
+        </Link>
+      )}
+    </li>
+  );
+});
 
 const Navbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,12 +89,28 @@ const Navbar: FC = () => {
   });
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleItemClick = useCallback(() => {
+  const handleItemClick = useCallback((href: string) => {
     setIsOpen(false);
-  }, []);
+    
+    if (href.startsWith("/#")) {
+      const sectionId = href.substring(2);
+      
+      if (window.location.pathname !== "/") {
+        navigate("/", { replace: true });
+      }
+      
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    }
+  }, [navigate]);
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitting(true);
     setSubmitMessage("");
@@ -66,12 +140,70 @@ const Navbar: FC = () => {
           data.message || "Something went wrong. Please try again."
         );
       }
-    } catch (error) {
+    } catch {
       setSubmitMessage("Network error. Please try again.");
     } finally {
       setFormSubmitting(false);
     }
-  };
+  }, [formData]);
+
+  // Memoize the desktop menu
+  const desktopMenu = useMemo(() => (
+    <div className="hidden lg:flex flex-1 justify-center">
+      <NavigationMenu>
+        <NavigationMenuList className="flex gap-4 sm:gap-6">
+          {menuItems.map((item) => (
+            <MenuItem 
+              key={item.label} 
+              item={item} 
+              handleItemClick={handleItemClick} 
+              setIsOpen={setIsOpen} 
+            />
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  ), [handleItemClick]);
+
+  // Memoize the mobile menu
+  const mobileMenu = useMemo(() => (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="lg:hidden px-4 pb-4"
+        >
+          <div className="bg-gray-900 rounded-xl shadow-lg p-4 mt-1 border border-yellow-900">
+            <ul className="space-y-2">
+              {menuItems.map((item) => (
+                <MobileMenuItem 
+                  key={item.label} 
+                  item={item} 
+                  handleItemClick={handleItemClick} 
+                  setIsOpen={setIsOpen} 
+                />
+              ))}
+              <li>
+                <Button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsFormOpen(true);
+                  }}
+                  className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-md shadow-md transition"
+                  aria-label="Get Started"
+                >
+                  Get Started
+                </Button>
+              </li>
+            </ul>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  ), [isOpen, handleItemClick]);
 
   return (
     <>
@@ -96,25 +228,7 @@ const Navbar: FC = () => {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <NavigationMenu>
-              <NavigationMenuList className="flex gap-4 sm:gap-6">
-                {menuItems.map((item) => (
-                  <NavigationMenuItem key={item.label}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        to={item.href}
-                        className="text-white text-sm sm:text-base font-semibold hover:text-yellow-400 transition-colors"
-                        onClick={handleItemClick}
-                      >
-                        {item.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
+          {desktopMenu}
 
           {/* CTA button */}
           <div className="hidden lg:flex">
@@ -129,48 +243,9 @@ const Navbar: FC = () => {
         </div>
 
         {/* Mobile menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="lg:hidden px-4 pb-4"
-            >
-              <div className="bg-gray-900 rounded-xl shadow-lg p-4 mt-1 border border-yellow-900">
-                <ul className="space-y-2">
-                  {menuItems.map((item) => (
-                    <li key={item.label}>
-                      <Link
-                        to={item.href}
-                        onClick={handleItemClick}
-                        className="block text-white text-base font-semibold hover:text-yellow-400 transition py-1"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Button
-                      onClick={() => {
-                        handleItemClick();
-                        setIsFormOpen(true);
-                      }}
-                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-md shadow-md transition"
-                      aria-label="Get Started"
-                    >
-                      Get Started
-                    </Button>
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {mobileMenu}
       </nav>
 
-      {/* Modal Form */}
       {/* Modal Form */}
       <AnimatePresence>
         {isFormOpen && (
@@ -199,7 +274,7 @@ const Navbar: FC = () => {
               {/* Form Header */}
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold sm:text-3xl mb-2 text-yellow-500">
-                  Let’s Build the Future Together 🚀
+                  Let's Build the Future Together 🚀
                 </h2>
                 <p className="text-sm sm:text-base text-white">
                   Share your project details and our team will connect with you
@@ -279,4 +354,4 @@ const Navbar: FC = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

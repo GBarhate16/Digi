@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../Components/ui/button';
 import { Input } from '../Components/ui/input';
 import { Label } from '../Components/ui/label';
@@ -13,6 +14,7 @@ const AdminLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,23 +22,36 @@ const AdminLogin: React.FC = () => {
     setError('');
 
     try {
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+      
       const data = await response.json();
 
       if (response.ok) {
         login(data.token);
+        // Redirect to dashboard after successful login
+        navigate('/dashboard', { replace: true });
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.message || 'Login failed. Please try again.');
       }
-    } catch {
-      setError('Network error. Please try again.');
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        setError('Request timed out. Please check your connection and try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }

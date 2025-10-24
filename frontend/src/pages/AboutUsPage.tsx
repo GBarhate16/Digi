@@ -1,3 +1,4 @@
+import { memo } from "react";
 import LightRays from "../Components/ui/LightRays";
 import { Sparkles } from "lucide-react";
 import { FaqAccordion } from "../Components/ui/faq";
@@ -53,6 +54,11 @@ const defaultData = [
 const AboutUsSection = () => {
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.2, triggerOnce: false });
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (inView) controls.start("visible");
@@ -145,4 +151,4 @@ const AboutUsSection = () => {
   );
 };
 
-export default AboutUsSection;
+export default memo(AboutUsSection);

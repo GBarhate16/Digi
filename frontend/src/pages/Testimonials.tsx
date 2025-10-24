@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { MessageCircle } from "lucide-react";
 import Lenis from "lenis";
 import { TestimonialsColumn } from "../Components/ui/testimonials-columns-1";
-
 
 const testimonials = [
   { text: "This ERP revolutionized our operations, streamlining finance and inventory. The cloud-based platform keeps us productive, even remotely.", image: "https://randomuser.me/api/portraits/women/1.jpg", name: "Briana Patton", role: "Operations Manager" },
@@ -17,7 +16,6 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
-
   const [, setScreenType] = useState<'mobile' | 'tablet' | 'laptop' | 'desktop'>('desktop');
 
   useEffect(() => {
@@ -74,4 +72,4 @@ const Testimonials = () => {
   );
 };
 
-export default Testimonials;
+export default memo(Testimonials);

@@ -1,10 +1,13 @@
 import { Brain } from "lucide-react";
-import type { FC } from "react";
+import { memo, type FC } from "react";
 import { WhatWeProvide } from "./cards";
 import { useState, useEffect } from "react";
 
 const Services: FC = () => {
-
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [screenType, setScreenType] = useState<
     "mobile" | "tablet" | "laptop" | "desktop"
@@ -62,4 +65,4 @@ const Services: FC = () => {
   );
 };
 
-export default Services;
+export default memo(Services);

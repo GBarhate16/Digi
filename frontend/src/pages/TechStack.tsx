@@ -1,3 +1,4 @@
+import { memo } from "react";
 import SpotlightCard from "../Components/ui/spotlight-card";
 import {
   SiMysql,
@@ -14,7 +15,6 @@ import {
 } from "react-icons/si";
 import { DiJava } from "react-icons/di";
 import { Code2 } from "lucide-react";
-
 
 const techStack = [
   { name: "MySQL", icon: <SiMysql size={40} className="text-blue-600" /> },
@@ -44,10 +44,8 @@ const techStack = [
 ];
 
 const TechStack = () => {
- 
-
   return (
-    <div
+    <section
       id="tech-stack"
       className="w-full px-4 py-12 bg-black scroll-mt-24 pt-0"
     >
@@ -83,8 +81,8 @@ const TechStack = () => {
           </SpotlightCard>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
-export default TechStack;
+export default memo(TechStack);

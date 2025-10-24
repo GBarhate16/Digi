@@ -1,11 +1,17 @@
 // components/Industries.tsx
-import type { FC } from "react";
+import { memo, type FC } from "react";
 import { Factory } from "lucide-react";
 import FeaturesSectionWithHoverEffects from "../Components/ui/feature-section-with-hover-effects";
 
 import Threads from "../Components/ui/Threads";
+import { useEffect } from "react";
 
 const Industries: FC = () => {
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <section
       id="industries"
@@ -49,4 +55,4 @@ const Industries: FC = () => {
   );
 };
 
-export default Industries;
+export default memo(Industries);

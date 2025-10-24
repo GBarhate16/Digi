@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useMemoizedFetch } from '../hooks/useMemoizedFetch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -39,34 +40,151 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmission[]>([]);
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for hamburger menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Use ref to store the latest submissions for real-time updates
+  const submissionsRef = useRef(submissions);
+  
+  // Filter submissions based on search query
+  const filteredSubmissions = useMemo(() => {
+    if (!searchQuery) return submissions;
+    
+    const query = searchQuery.toLowerCase();
+    return submissions.filter(submission => 
+      submission.fullName.toLowerCase().includes(query) ||
+      submission.email.toLowerCase().includes(query) ||
+      submission.mobileNumber.includes(query) ||
+      submission.message.toLowerCase().includes(query)
+    );
+  }, [submissions, searchQuery]);
+  
+  // Use our custom hook for fetching stats
+  const { data: statsData, loading: statsLoading } = useMemoizedFetch<Stats>(
+    `${import.meta.env.VITE_API_URL}/admin/stats`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+  
+  // Use our custom hook for fetching submissions
+  const { data: submissionsData, loading: submissionsLoading } = useMemoizedFetch<FormSubmission[]>(
+    `${import.meta.env.VITE_API_URL}/admin/submissions`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+
+  // Update stats when data changes
+  useEffect(() => {
+    if (statsData) {
+      setStats(statsData);
+    }
+  }, [statsData]);
+
+  // Update submissions when data changes
+  useEffect(() => {
+    if (submissionsData) {
+      setSubmissions(submissionsData);
+    }
+  }, [submissionsData]);
+
+  // Update loading state
+  useEffect(() => {
+    setLoading(statsLoading || submissionsLoading);
+  }, [statsLoading, submissionsLoading]);
+
+  // Update ref when submissions change
+  useEffect(() => {
+    submissionsRef.current = submissions;
+  }, [submissions]);
+
+  // Memoize formatDate function
+  const formatDate = useCallback((dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }, []);
+
+  // Memoize handleDelete function
+  const handleDelete = useCallback(async (id: string) => {
+    if (!confirm('Are you sure you want to delete this submission?')) return;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/submissions/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        setSubmissions(prev => prev.filter(sub => sub._id !== id));
+        setStats(prev => ({ ...prev, totalSubmissions: prev.totalSubmissions - 1 }));
+      }
+    } catch (error: any) {
+      console.error('Error deleting submission:', error);
+    }
+  }, [token]);
+
+  // Memoize handleRefresh function
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const [submissionsRes, statsRes] = await Promise.all([
         fetch(`${import.meta.env.VITE_API_URL}/admin/submissions`, {
           headers: {
             'Authorization': `Bearer ${token}`
-          }
+          },
+          signal: controller.signal
         }),
         fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`
-          }
+          },
+          signal: controller.signal
         })
       ]);
 
+      clearTimeout(timeoutId);
+      
       if (submissionsRes.ok && statsRes.ok) {
         const submissionsData = await submissionsRes.json();
         const statsData = await statsRes.json();
         setSubmissions(submissionsData);
         setStats(statsData);
+      } else {
+        if (submissionsRes.status === 401 || statsRes.status === 401) {
+          console.log('Unauthorized access, token might be invalid');
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching data:', error);
+      if (error.name === 'AbortError') {
+        console.error('Data fetch timed out');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -114,7 +232,6 @@ const AdminDashboard: React.FC = () => {
             case 'delete_submission':
               console.log('Submission deleted:', data.data.id);
               setSubmissions(prev => prev.filter(sub => sub._id !== data.data.id));
-              setFilteredSubmissions(prev => prev.filter(sub => sub._id !== data.data.id));
               setStats(prev => ({ 
                 ...prev, 
                 totalSubmissions: prev.totalSubmissions - 1
@@ -152,61 +269,6 @@ const AdminDashboard: React.FC = () => {
       }
     };
   }, [token]);
-
-  // Filter submissions
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredSubmissions(submissions);
-      return;
-    }
-
-    const filtered = submissions.filter(submission => {
-      const query = searchQuery.toLowerCase();
-      return (
-        submission.fullName.toLowerCase().includes(query) ||
-        submission.email.toLowerCase().includes(query) ||
-        submission.mobileNumber.toLowerCase().includes(query) ||
-        submission.message.toLowerCase().includes(query)
-      );
-    });
-    setFilteredSubmissions(filtered);
-  }, [searchQuery, submissions]);
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this submission?')) return;
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/submissions/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        setSubmissions(submissions.filter(sub => sub._id !== id));
-        setFilteredSubmissions(filteredSubmissions.filter(sub => sub._id !== id));
-        setStats(prev => ({ ...prev, totalSubmissions: prev.totalSubmissions - 1 }));
-      }
-    } catch (error) {
-      console.error('Error deleting submission:', error);
-    }
-  };
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    fetchData();
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   if (loading) {
     return (
@@ -422,7 +484,7 @@ const AdminDashboard: React.FC = () => {
               </motion.div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredSubmissions.map((submission, index) => (
+                {filteredSubmissions.map((submission: FormSubmission, index: number) => (
                   <motion.div
                     key={submission._id}
                     initial={{ opacity: 0, y: 20 }}

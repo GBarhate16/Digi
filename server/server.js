@@ -37,6 +37,10 @@ const adminSchema = new mongoose.Schema({
 
 const Admin = mongoose.model('Admin', adminSchema);
 
+// Add indexes for better query performance
+ContactForm.collection.createIndex({ submittedAt: -1 });
+Admin.collection.createIndex({ email: 1 }, { unique: true });
+
 // Authentication Middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -132,14 +136,28 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const admin = await Admin.findOne({ email });
+    // Add a 5 second timeout for the database query
+    const adminPromise = Admin.findOne({ email });
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Database query timeout')), 5000);
+    });
+
+    const admin = await Promise.race([adminPromise, timeoutPromise]);
+    
     if (!admin) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Email or password is incorrect' });
     }
 
-    const isValidPassword = await bcrypt.compare(password, admin.password);
+    // Add a 5 second timeout for password comparison
+    const bcryptPromise = bcrypt.compare(password, admin.password);
+    const bcryptTimeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Password comparison timeout')), 5000);
+    });
+
+    const isValidPassword = await Promise.race([bcryptPromise, bcryptTimeoutPromise]);
+    
     if (!isValidPassword) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Email or password is incorrect' });
     }
 
     const token = jwt.sign(
@@ -151,7 +169,12 @@ app.post('/api/admin/login', async (req, res) => {
     res.json({ token, message: 'Login successful' });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    
+    if (error.message === 'Database query timeout' || error.message === 'Password comparison timeout') {
+      return res.status(503).json({ message: 'Service temporarily unavailable. Please try again later.' });
+    }
+    
+    res.status(500).json({ message: 'Internal server error. Please try again later.' });
   }
 });
 

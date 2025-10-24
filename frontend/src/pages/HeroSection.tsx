@@ -1,12 +1,13 @@
 // src/pages/HeroSection.tsx
 import type { FC } from "react";
+import { memo } from "react";
 import ButtonColorful from "../Components/ui/button-colorful";
 import DarkVeil from "../Components/ui/darkveil";
 import { FeaturesSection } from "./cards";
 
 const HeroSection: FC = () => {
   return (
-    <div
+    <section
       id="home"
       className="relative w-full bg-black text-white overflow-hidden"
     >
@@ -67,8 +68,8 @@ const HeroSection: FC = () => {
           <FeaturesSection />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default HeroSection;
+export default memo(HeroSection);
