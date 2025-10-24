@@ -31,7 +31,6 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingComponent />}>
           <Routes>
-            {/* Shared layout route */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="about" element={<AboutUsSection />} />
@@ -54,6 +53,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            {/* Catch-all route */}
+            <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>
       </Router>

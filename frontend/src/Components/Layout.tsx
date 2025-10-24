@@ -1,26 +1,23 @@
 // src/Components/Layout.tsx
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useLocation, Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-// Scroll to top hook optimized with useMemo
+// Scroll to top hook
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Use requestAnimationFrame for smoother scrolling
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // Scroll to top immediately
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;
 };
 
 const Layout = () => {
-  // Memoize the layout structure
-  const layoutStructure = useMemo(() => (
+  return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
       <Navbar />
@@ -29,9 +26,7 @@ const Layout = () => {
       </main>
       <Footer />
     </div>
-  ), []);
-
-  return layoutStructure;
+  );
 };
 
 export default Layout;
