@@ -48,7 +48,7 @@ const Footer = () => {
             <li>
               Phone:{" "}
               <a href="tel:+919595669766" className="text-white hover:underline underline-offset-4">
-                +91 9595669766
+                +91 9021117452
               </a>
             </li>
           </ul>
