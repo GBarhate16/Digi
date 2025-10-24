@@ -42,7 +42,7 @@ const Footer = () => {
             <li>
               Email:{" "}
               <a href="mailto:hr@digitos.com" className="text-white hover:underline underline-offset-4">
-                hr@digitos.com
+                admin@digitos.com
               </a>
             </li>
             <li>
