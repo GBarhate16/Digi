@@ -10,6 +10,7 @@ import {
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/Logo.png";
 
 
 const menuItems = [
@@ -215,7 +216,7 @@ const Navbar: FC = () => {
           <Link to="/" className="flex items-center group">
             {/* Logo Image */}
             <img
-              src="/src/assets/logo.png"
+              src={logo}
               alt="Digitos Logo"
               className="h-8 w-auto sm:h-10 md:h-12 object-contain transition-transform duration-300 group-hover:scale-105"
               style={{ maxWidth: '120px' }}

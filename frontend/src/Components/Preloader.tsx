@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCriticalAssets } from '../hooks/usePreloader';
+import logo from '../assets/Logo.png';
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -67,7 +68,7 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
           >
             {/* Logo Image */}
             <img
-              src="/src/assets/logo.png"
+              src={logo}
               alt="Digitos Logo"
               className="h-16 w-auto sm:h-20 md:h-24 object-contain"
               style={{ maxWidth: '200px' }}
