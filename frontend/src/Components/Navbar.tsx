@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
+
 const menuItems = [
   { label: "Home", href: "/#home" },
   { label: "About Us", href: "/about" },
@@ -211,9 +212,15 @@ const Navbar: FC = () => {
       <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 shadow-md">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3 font-sans">
           {/* Logo */}
-          <div className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight font-mono">
-            <span className="text-yellow-500">Digitos</span>
-          </div>
+          <Link to="/" className="flex items-center group">
+            {/* Logo Image */}
+            <img
+              src="/src/assets/logo.png"
+              alt="Digitos Logo"
+              className="h-8 w-auto sm:h-10 md:h-12 object-contain transition-transform duration-300 group-hover:scale-105"
+              style={{ maxWidth: '120px' }}
+            />
+          </Link>
 
           {/* Hamburger - mobile only */}
           <div className="flex lg:hidden">

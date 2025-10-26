@@ -1,18 +1,104 @@
 @import "tailwindcss";
 
+/* Global styles - background set in HTML */
+html {
+  scroll-behavior: smooth;
+  /* AGGRESSIVE SCROLL FIX */
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+}
+
+body {
+  color: #ffffff;
+  /* Optimize for animations and transforms */
+  will-change: scroll-position;
+  /* Hardware acceleration */
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  /* AGGRESSIVE SCROLL FIX */
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  position: static !important;
+}
+#root {
+  color: #ffffff;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+/* Mobile-specific optimizations */
+@media screen and (max-width: 768px) {
+  html, body {
+    /* Prevent mobile flash */
+    background-color: #000000 !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Ensure mobile scrolling works */
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #root {
+    /* Mobile viewport fixes */
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent mobile zoom on double tap */
+  * {
+    touch-action: manipulation;
+  }
+}
+
 /* Performance optimizations */
 * {
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Logo optimizations */
+img[alt="Digitos Logo"] {
+  /* Ensure logo loads smoothly */
+  transition: opacity 0.3s ease-in-out;
+  /* Prevent layout shift during load */
+  min-height: 2rem;
 }
 
-body {
-  overflow-x: hidden;
-  /* Optimize for animations and transforms */
-  will-change: scroll-position;
+/* Logo loading state */
+img[alt="Digitos Logo"]:not([src]) {
+  opacity: 0;
+}
+
+/* Responsive logo sizing */
+@media (max-width: 640px) {
+  img[alt="Digitos Logo"] {
+    min-height: 1.5rem;
+  }
+}
+
+/* Root element optimization */
+#root {
+  background-color: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+  /* Prevent flash during React hydration */
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
+  /* Hardware acceleration */
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
 }
 
 /* Optimize for GPU acceleration */
@@ -20,6 +106,45 @@ body {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* Enhanced hardware acceleration for animations */
+.animate-element {
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* Prevent animation flicker */
+.no-flash {
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+}
+
+/* Background animation optimization - prevent flash */
+.bg-animated, .animate-element, [class*="animate-"] {
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  will-change: transform, background-color;
+}
+
+/* Specific optimization for background elements - only during loading */
+.theme-loading section, .theme-loading div[class*="bg-"], .theme-loading div[class*="background"] {
+  background-color: #000000;
+  transition: background-color 0.3s ease;
+}
+
+/* Prevent flash during component mounting */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 /* Reduce layout thrashing for cards */
@@ -68,4 +193,27 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: #facc15 #000;
+}
+
+/* Optimize transitions for better performance */
+.transition-optimized {
+  transition-property: transform, opacity, background-color, border-color;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent layout shifts */
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+/* Optimize animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }

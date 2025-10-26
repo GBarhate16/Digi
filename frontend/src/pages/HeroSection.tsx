@@ -9,7 +9,7 @@ const HeroSection: FC = () => {
   return (
     <section
       id="home"
-      className="relative w-full bg-black text-white overflow-hidden"
+      className="relative w-full bg-black text-white overflow-hidden bg-animated fade-in"
     >
       {/* Background Visual Effect */}
       <div className="absolute inset-0 z-0 w-full h-full ">

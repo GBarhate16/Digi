@@ -5,6 +5,100 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Digitos Solutions</title>
+    
+    <!-- THE REAL FIX: Background color BEFORE React mounts -->
+    <style>
+      /* Immediate black background - targeted approach */
+      html, body {
+        background-color: #000000 !important;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        /* Allow scrolling - this is essential for website functionality */
+        overflow-x: hidden;
+        overflow-y: auto;
+        /* Remove animation to prevent flash */
+        opacity: 1;
+      }
+      
+      #root {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        min-height: 100vh;
+        width: 100%;
+        /* Ensure immediate visibility */
+        opacity: 1;
+      }
+      
+      /* Only target root elements during initial load */
+      .initial-loading * {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+      }
+      
+      /* Preloader-like styling to bridge the gap */
+      .preloader-bridge {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+    </style>
+    
+    <!-- Immediate preloader bridge script -->
+    <script>
+      (function() {
+        // Add loading class to prevent flash
+        document.documentElement.classList.add('initial-loading');
+        
+        // Create immediate preloader bridge
+        const bridge = document.createElement('div');
+        bridge.className = 'preloader-bridge';
+        bridge.innerHTML = `
+          <div style="text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+              <img 
+                src="/src/assets/logo.png" 
+                alt="Digitos Logo" 
+                style="height: 4rem; width: auto; max-width: 200px; object-fit: contain;"
+              />
+            </div>
+            <div style="width: 200px; height: 2px; background: #374151; border-radius: 1px; overflow: hidden; margin: 0 auto;">
+              <div style="height: 100%; background: linear-gradient(to right, #fbbf24, #f59e0b); border-radius: 1px; width: 0%; animation: progress 1s ease-in-out forwards;"></div>
+            </div>
+          </div>
+          <style>
+            @keyframes progress {
+              to { width: 100%; }
+            }
+          </style>
+        `;
+        
+        // Add bridge immediately
+        document.body.appendChild(bridge);
+        
+        // Remove loading class and bridge when React loads
+        window.addEventListener('load', function() {
+          setTimeout(() => {
+            document.documentElement.classList.remove('initial-loading');
+            // Ensure scrolling is enabled
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            if (bridge.parentNode) {
+              bridge.parentNode.removeChild(bridge);
+            }
+          }, 100);
+        });
+      })();
+    </script>
+    
   </head>
   <body>
     <div id="root"></div>
