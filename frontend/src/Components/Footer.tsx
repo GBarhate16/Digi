@@ -45,14 +45,14 @@ const Footer = () => {
           <ul className="space-y-3 text-sm text-gray-400 mb-6">
             <li className="flex items-center space-x-2">
               <Mail className="w-4 h-4 text-yellow-400" />
-              <a href="mailto:hr@digitos.com" className="text-white hover:text-yellow-400 transition-colors">
-                hr@digitos.com
+              <a href="mailto:support@digitositsolutionpvtltd.com" className="text-white hover:text-yellow-400 transition-colors">
+              support@digitositsolutionpvtltd.com
               </a>
             </li>
             <li className="flex items-center space-x-2">
               <Phone className="w-4 h-4 text-yellow-400" />
               <a href="tel:+919595669766" className="text-white hover:text-yellow-400 transition-colors">
-                +91 9021117452
+                +91 7620195100
               </a>
             </li>
           </ul>
@@ -97,38 +97,6 @@ const Footer = () => {
 
       {/* Social Media Section */}
       <div className="mt-10 text-center border-t border-gray-800 pt-6">
-        {/* <div className="flex justify-center space-x-6 mb-4">
-          <a
-            href="https://www.instagram.com/digitos_it_solutions?igsh=Zzl3MGppZ2llZ2Nn&utm_source=qr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 group shadow-lg"
-            aria-label="Instagram"
-          >
-            <Instagram className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-          </a>
-          
-          <a
-            href="https://x.com/digitos_it?s=21"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 group shadow-lg"
-            aria-label="Twitter"
-          >
-            <Twitter className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-          </a>
-          
-          <a
-            href="https://www.linkedin.com/company/digitos-it-solution/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-300 group shadow-lg"
-            aria-label="LinkedIn"
-          >
-            <Linkedin className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-          </a>
-        </div>
-         */}
         <p className="text-xs text-gray-500">
           © {new Date().getFullYear()} Digitos Solutions. All rights reserved.
         </p>
