@@ -38,7 +38,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await fetch(`${apiUrl}/api/admin/stats`, {
+        const baseUrl = apiUrl.replace(/\/$/, '');
+        const isLocalhost = baseUrl.includes('localhost');
+        const response = await fetch(`${baseUrl}${isLocalhost ? '/api/admin/stats' : '/admin/stats'}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },

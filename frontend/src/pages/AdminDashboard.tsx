@@ -60,6 +60,9 @@ const AdminDashboard: React.FC = () => {
   }, [submissions, searchQuery]);
   
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // Remove trailing slash and ensure proper API path
+  const baseUrl = apiUrl.replace(/\/$/, '');
+  const isLocalhost = baseUrl.includes('localhost');
 
   // Update ref when submissions change
   useEffect(() => {
@@ -85,7 +88,7 @@ const AdminDashboard: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      const response = await fetch(`${apiUrl}/api/admin/submissions/${id}`, {
+      const response = await fetch(`${baseUrl}${isLocalhost ? '/api/admin/submissions' : '/admin/submissions'}/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -102,7 +105,7 @@ const AdminDashboard: React.FC = () => {
     } catch (error: unknown) {
       console.error('Error deleting submission:', error);
     }
-  }, [token, apiUrl]);
+  }, [token, baseUrl, isLocalhost]);
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -113,13 +116,13 @@ const AdminDashboard: React.FC = () => {
       const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced timeout
       
       const [submissionsRes, statsRes] = await Promise.all([
-        fetch(`${apiUrl}/api/admin/submissions`, {
+        fetch(`${baseUrl}${isLocalhost ? '/api/admin/submissions' : '/admin/submissions'}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
           signal: controller.signal
         }),
-        fetch(`${apiUrl}/api/admin/stats`, {
+        fetch(`${baseUrl}${isLocalhost ? '/api/admin/stats' : '/admin/stats'}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -153,7 +156,7 @@ const AdminDashboard: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [token, apiUrl]);
+  }, [token, baseUrl, isLocalhost]);
 
   // Memoize handleRefresh function
   const handleRefresh = useCallback(() => {
@@ -173,7 +176,7 @@ const AdminDashboard: React.FC = () => {
     if (!token) return;
 
     const connectRealtime = () => {
-      const eventSource = new EventSource(`${apiUrl}/api/admin/realtime?token=${token}`);
+      const eventSource = new EventSource(`${baseUrl}${isLocalhost ? '/api/admin/realtime' : '/admin/realtime'}?token=${token}`);
 
       eventSource.onopen = () => {
         console.log('Real-time connection established');
@@ -241,7 +244,7 @@ const AdminDashboard: React.FC = () => {
         setRealtimeConnected(false);
       }
     };
-  }, [token, apiUrl]);
+  }, [token, baseUrl, isLocalhost]);
 
   if (loading) {
     return (

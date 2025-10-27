@@ -27,7 +27,10 @@ const AdminLogin: React.FC = () => {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
       const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${apiUrl}/api/admin/login`, {
+      // Remove trailing slash and ensure proper API path
+      const baseUrl = apiUrl.replace(/\/$/, '');
+      const endpoint = baseUrl.includes('localhost') ? '/api/admin/login' : '/admin/login';
+      const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,8 +50,8 @@ const AdminLogin: React.FC = () => {
       } else {
         setError(data.message || 'Login failed. Please try again.');
       }
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
         setError('Request timed out. Please check your connection and try again.');
       } else {
         setError('Network error. Please check your connection and try again.');

@@ -22,7 +22,9 @@ const ContactForm: FC = () => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${apiUrl}/api/contact`, {
+      const baseUrl = apiUrl.replace(/\/$/, '');
+      const isLocalhost = baseUrl.includes('localhost');
+      const response = await fetch(`${baseUrl}${isLocalhost ? '/api/contact' : '/contact'}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
