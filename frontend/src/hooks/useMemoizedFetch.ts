@@ -30,11 +30,15 @@ export const useMemoizedFetch = <T>(url: string, options?: RequestInit) => {
       
       const result = await response.json();
       setData(result);
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        setError('Request timed out');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          setError('Request timed out');
+        } else {
+          setError(err.message || 'An error occurred');
+        }
       } else {
-        setError(err.message || 'An error occurred');
+        setError('An unknown error occurred');
       }
     } finally {
       setLoading(false);

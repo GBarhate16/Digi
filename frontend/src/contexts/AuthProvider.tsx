@@ -37,7 +37,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${apiUrl}/api/admin/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -50,9 +51,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = React.memo(({ children 
           localStorage.removeItem('adminToken');
           setToken(null);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Auth check failed:', error);
-        if (error.name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError') {
           localStorage.removeItem('adminToken');
           setToken(null);
         }

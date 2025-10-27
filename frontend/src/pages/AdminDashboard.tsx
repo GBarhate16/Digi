@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useMemoizedFetch } from '../hooks/useMemoizedFetch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -60,44 +59,7 @@ const AdminDashboard: React.FC = () => {
     );
   }, [submissions, searchQuery]);
   
-  // Use our custom hook for fetching stats
-  const { data: statsData, loading: statsLoading } = useMemoizedFetch<Stats>(
-    `${import.meta.env.VITE_API_URL}/admin/stats`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }
-  );
-  
-  // Use our custom hook for fetching submissions
-  const { data: submissionsData, loading: submissionsLoading } = useMemoizedFetch<FormSubmission[]>(
-    `${import.meta.env.VITE_API_URL}/admin/submissions`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }
-  );
-
-  // Update stats when data changes
-  useEffect(() => {
-    if (statsData) {
-      setStats(statsData);
-    }
-  }, [statsData]);
-
-  // Update submissions when data changes
-  useEffect(() => {
-    if (submissionsData) {
-      setSubmissions(submissionsData);
-    }
-  }, [submissionsData]);
-
-  // Update loading state
-  useEffect(() => {
-    setLoading(statsLoading || submissionsLoading);
-  }, [statsLoading, submissionsLoading]);
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   // Update ref when submissions change
   useEffect(() => {
@@ -123,7 +85,7 @@ const AdminDashboard: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/submissions/${id}`, {
+      const response = await fetch(`${apiUrl}/api/admin/submissions/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -137,30 +99,27 @@ const AdminDashboard: React.FC = () => {
         setSubmissions(prev => prev.filter(sub => sub._id !== id));
         setStats(prev => ({ ...prev, totalSubmissions: prev.totalSubmissions - 1 }));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting submission:', error);
     }
-  }, [token]);
+  }, [token, apiUrl]);
 
-  // Memoize handleRefresh function
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!token) return;
+    
     try {
+      setLoading(true);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced timeout
       
       const [submissionsRes, statsRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/admin/submissions`, {
+        fetch(`${apiUrl}/api/admin/submissions`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
           signal: controller.signal
         }),
-        fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, {
+        fetch(`${apiUrl}/api/admin/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -175,32 +134,46 @@ const AdminDashboard: React.FC = () => {
         const statsData = await statsRes.json();
         setSubmissions(submissionsData);
         setStats(statsData);
+        console.log('Data loaded successfully:', { submissionsData, statsData });
       } else {
+        console.error('API Error:', { 
+          submissionsStatus: submissionsRes.status, 
+          statsStatus: statsRes.status 
+        });
         if (submissionsRes.status === 401 || statsRes.status === 401) {
           console.log('Unauthorized access, token might be invalid');
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching data:', error);
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         console.error('Data fetch timed out');
       }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [token, apiUrl]);
 
-  useEffect(() => {
+  // Memoize handleRefresh function
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
     fetchData();
-  }, [token]);
+  }, [fetchData]);
+
+  // Initial data fetch
+  useEffect(() => {
+    if (token) {
+      fetchData();
+    }
+  }, [token, fetchData]);
 
   // Real-time connection
   useEffect(() => {
     if (!token) return;
 
     const connectRealtime = () => {
-      const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/admin/realtime?token=${token}`);
+      const eventSource = new EventSource(`${apiUrl}/api/admin/realtime?token=${token}`);
 
       eventSource.onopen = () => {
         console.log('Real-time connection established');
@@ -268,7 +241,7 @@ const AdminDashboard: React.FC = () => {
         setRealtimeConnected(false);
       }
     };
-  }, [token]);
+  }, [token, apiUrl]);
 
   if (loading) {
     return (
@@ -276,6 +249,7 @@ const AdminDashboard: React.FC = () => {
         <div className="text-center">
           <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white text-sm sm:text-lg">Loading dashboard...</p>
+          <p className="text-gray-400 text-xs mt-2">Please wait while we fetch your data...</p>
         </div>
       </div>
     );

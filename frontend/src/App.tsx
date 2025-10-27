@@ -14,6 +14,7 @@ const AboutUsSection = lazy(() => import("./pages/AboutUsPage"));
 const Services = lazy(() => import("./pages/Services"));
 const Industries = lazy(() => import("./pages/Industries"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const ContactForm = lazy(() => import("./pages/ContactForm"));
 
 function App() {
   useLenis(); // ✅ Enable Lenis globally
@@ -64,6 +65,7 @@ function App() {
                 <Route path="services" element={<Services />} />
                 <Route path="industries" element={<Industries />} />
               </Route>
+              <Route path="/contact" element={<ContactForm />} />
               <Route
                 path="/admin"
                 element={
